@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Detection App</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon_io (1)/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon_io (1)/favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon_io (1)/apple-touch-icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Detection App</h1>
+        <div class="weather-container">
+            <form id="city-search-form" action="/pred" method="post">
+                <input type="text" id="city-input" name="city" placeholder="Enter City Name" required>
+                <button type="submit">Search</button>
+            </form>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-warning alert-dissmissible fade show" role="alert" id="flash-alert">
+                        <strong>Warning!</strong>
+                        {{messages[0]}}
+                        <button type="button" class="close" aria-label="Close" onclick="document.getElementById('flash-alert').style.display='none';">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+        <!-- weather display section -->
+        <div class="weather1">
+            <div class="weather-row">
+                <div class="weather-box temp-box">
+                    <h2>Temp</h2>
+                    <p>{{temp}}&#176;</p>
+                </div>
+                <div class="weather-box city-box">
+                    <h2>City</h2>
+                    <p>{{city}}</p>
+                </div>
+                <div class="weather-box desc-box">
+                    <h2>Description</h2>
+                    <p>{{description}}</p>
+                </div>
+                <div class="weather-box day-box">
+                    <h2>Day</h2>
+                    <p>{{day}}</p>
+                </div>
+            </div>
+        </div>
+        {% if city_image_url %}
+        <div class="city-image" style="margin: 20px 0; text-align: center;">
+            <img src="{{ city_image_url }}" alt="Image of {{ city }}" style="max-width:100%;height:auto;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+        </div>
+        {% endif %}
+    </div>   
+    <div class="weather-details">
+    <div class="details-row">
+        <div class="details-box"><strong>Humidity:</strong> {{humidity}}</div>
+        <div class="details-box"><strong>Wind Speed:</strong> {{wind_speed}}</div>
+    </div>
+    <div class="details-row">
+        <div class="details-box"><strong>Max Temp:</strong> {{max_temp}}</div>
+        <div class="details-box"><strong>Min Temp:</strong> {{min_temp}}</div>
+    </div>
+    <div class="details-row">
+        <div class="details-box"><strong>Visibility:</strong> {{visibility}}</div>
+        <div class="details-box"><strong>Cloudiness:</strong> {{cloudiness}}</div>
+    </div>
+    <div class="details-row">
+        <div class="details-box"><strong>Sunset:</strong> {{sunset}}</div>
+        <div class="details-box"><strong>Sunrise:</strong> {{sunrise}}</div>
+    </div>
+</div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
