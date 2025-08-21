@@ -2,8 +2,10 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 import requests
 import datetime
 
+import os
+
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = os.environ.get('FLASK_SECRET', 'your_secret_key')
 
 def get_weather(city):
     weather_data = {
@@ -14,10 +16,9 @@ def get_weather(city):
     return weather_data.get(city.title(), {'temp': 'N/A', 'description': 'No data available'})
 
 def get_city_image(city):
-    UNSPLASH_ACCESS_KEY = "ev9N7pxC8L2NUyjVa69cLp855PEUcWq6YkOE1dTA6H4"
-    # Google Custom Search API credentials (replace with your own)
-    GOOGLE_API_KEY = "AIzaSyAw0wuO_2BCkCtCO5mswuip2y4hU4IJnmY"  # Google API Key
-    SEARCH_ENGINE_ID = "20cd19bb9dd0e44a3"  # Search Engine ID
+    # Read API keys from environment variables
+    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', 'YOUR_GOOGLE_API_KEY')
+    SEARCH_ENGINE_ID = os.environ.get('SEARCH_ENGINE_ID', 'YOUR_SEARCH_ENGINE_ID')
     query = f"{city} famous landmark tourist attraction"
     url = f"https://www.googleapis.com/customsearch/v1?q={query}&searchType=image&cx={SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}&imgSize=large"
     try:
@@ -49,7 +50,11 @@ def index():
 @app.route('/pred', methods=['POST', 'GET'])
 def pred():
     city = request.form['city'] if request.method == 'POST' else "Bangalore"
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid=0fd537863a5ce3c39926d1aaa4156ec9"
+    OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', None)
+    if not OPENWEATHER_API_KEY:
+        flash('OpenWeather API key not configured. Set OPENWEATHER_API_KEY environment variable.', 'error')
+        return redirect(url_for('index'))
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}"
     PARAMS = {'units': 'metric'}
     try:
         data = requests.get(url, params=PARAMS).json()
